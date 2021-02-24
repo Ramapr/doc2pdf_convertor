@@ -7,9 +7,41 @@ Created on Wed Feb 24 20:08:08 2021
 
 from tkinter import *
 from tkinter import filedialog
-from doc_pdf_convertor import main
+#from os.path import join, abspath
+#from os import listdir
+from comtypes.client import CreateObject
+from tqdm import tqdm
+
 
 #%%
+
+def convertor(src, dst):
+  print('src', src)
+  word = CreateObject('Word.Application')
+  doc = word.Documents.Open(src)
+  doc.SaveAs(dst, FileFormat=17)
+  doc.Close()
+  word.Quit()
+
+#%%
+  
+def main(files):
+#  if not isinstance(files, list):
+#    file = []
+#    file.append(files)
+#  else:
+#    file = files
+   
+  print(files, type(files))
+  file = list(filter(lambda x: True if x.endswith(".docx") or x.endswith(".doc") else False, files))
+  print(file, type(file))
+  if not len(file):
+    print("There is no '.doc' or '.docx' files in directory")
+  else:
+    for src_p in tqdm(file):
+      dst_p = src_p.replace('docx', 'pdf') if '.docx' in src_p else src_p.replace('doc', 'pdf')
+      print(src_p, dst_p)
+      convertor(src_p, dst_p)
 
     
 
@@ -32,10 +64,27 @@ class Application(Frame):
   def run(self):
     if self.files != None:
       print(self.files)
-      main(self.files)
+      
+      #file = list(filter(lambda x: True if x.endswith(".docx") or x.endswith(".doc") else False, self.files))
+      file = ['C:/Users/Mi/Downloads/zqwe/+Абдулмуталибова АШ.docx'.replace('/', '//')]
+      print(file, type(file))
+      if not len(file):
+        print("There is no '.doc' or '.docx' files in directory")
+      else:
+        for src_p in file: #(tqdm)
+          dst_p = src_p.replace('docx', 'pdf') if '.docx' in src_p else src_p.replace('doc', 'pdf')
+          print('here', src_p, dst_p)
+          word = CreateObject('Word.Application')
+          doc = word.Documents.Open(src_p)
+          doc.SaveAs(dst_p, FileFormat=17)
+          doc.Close()
+          word.Quit()
+          #convertor(src_p, dst_p)
+      #main(self.files)
       self.files = None
-    else:
-      # system message of error
+    #else:
+    #  pass
+    #  # system message of error
       
   def createWidgets(self):
     
@@ -44,12 +93,6 @@ class Application(Frame):
     self.QUIT["fg"]   = "red"
     self.QUIT["command"] = self.quit
     self.QUIT.pack({"side": "left"})
-
-    #self.browse = Button(self)
-    #Button(bottomframe, text="Black", fg="black")
-    #blackbutton.pack( side = BOTTOM)
-    #self.browse.pack({"side": "left"})
-
 
     self.hi_there = Button(self)
     self.hi_there["text"] = "Browse Files",
@@ -72,7 +115,7 @@ class Application(Frame):
 
 root = Tk()
 root.title("DOC -> PDF")
-root.geometry("500x200")
+root.geometry("200x200")
 #root.geometry("500x500")
 #Set window background color
 #root.config(background = "white")
