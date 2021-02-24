@@ -65,8 +65,8 @@ class Application(Frame):
     if self.files != None:
       print(self.files)
       
-      #file = list(filter(lambda x: True if x.endswith(".docx") or x.endswith(".doc") else False, self.files))
-      file = ['C:/Users/Mi/Downloads/zqwe/+Абдулмуталибова АШ.docx'.replace('/', '//')]
+      file = list(filter(lambda x: True if x.endswith(".docx") or x.endswith(".doc") else False, self.files))
+      #file = ['C:/Users/Mi/Downloads/zqwe/+Абдулмуталибова АШ.docx'.replace('/', '//')]
       print(file, type(file))
       if not len(file):
         print("There is no '.doc' or '.docx' files in directory")
@@ -74,11 +74,17 @@ class Application(Frame):
         for src_p in file: #(tqdm)
           dst_p = src_p.replace('docx', 'pdf') if '.docx' in src_p else src_p.replace('doc', 'pdf')
           print('here', src_p, dst_p)
-          word = CreateObject('Word.Application')
-          doc = word.Documents.Open(src_p)
-          doc.SaveAs(dst_p, FileFormat=17)
-          doc.Close()
-          word.Quit()
+          try:
+            word = CreateObject('Word.Application')
+            doc = word.Documents.Open(src_p)
+            doc.SaveAs(dst_p.encode('unicode_escape'), FileFormat=17)
+            doc.Close()
+            word.Quit()
+           
+          except Exception as e:
+            doc.Close()
+            word.Quit()
+            print(e)
           #convertor(src_p, dst_p)
       #main(self.files)
       self.files = None
